@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.UUID;
 
 import com.google.gson.Gson;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 
 import comm.TCPConnection;
 import javafx.application.Platform;
@@ -38,9 +39,8 @@ public class GameController implements OnMessageListener {
 				event ->{
 					String name = view.getNameTF().getText();
 					if (!(name.equalsIgnoreCase(""))) {
-						Gson gson = new Gson();
-						String json = gson.toJson(new Message("Name_"+view.getNameTF().getText()));
-						TCPConnection.getInstance().getEmisor().sendMessage(json);
+						
+						sendMessage("Name_"+view.getNameTF().getText());
 					}
 					
 				});
@@ -50,11 +50,9 @@ public class GameController implements OnMessageListener {
 		view.getSurrenderBtn().setOnAction(
 				event ->{
 					
-						Gson gson = new Gson();
-						String json = gson.toJson(new Message(""));
-						TCPConnection.getInstance().getEmisor().sendMessage(json);
+						sendMessage("");
 						iLost();
-					
+						
 				});
 		
 		// START ATTACK BUTTONS FUNCTION
@@ -106,7 +104,17 @@ public class GameController implements OnMessageListener {
 
 	}
 	
+	private void sendMessage(String msg) {
+		
+
+		
+		Gson gson = new Gson();
+		String json = gson.toJson(new Message(msg));
+		TCPConnection.getInstance().getEmisor().sendMessage(json);
+	}
+	
 	private void receiveAttack(String coord) {
+		
 		
 		String[] realCoord = coord.split(",");
 		
@@ -118,10 +126,8 @@ public class GameController implements OnMessageListener {
 		if (tile.getStyle().contains("yellow")) {
 			view.drawMate(row, col);
 			
-			Gson gson = new Gson();
-			String json = gson.toJson(new Message("Status_YouWin"));
-			TCPConnection.getInstance().getEmisor().sendMessage(json);
-			
+		
+			sendMessage("Status_YouWin");
 			iLost();
 			
 			
@@ -137,10 +143,8 @@ public class GameController implements OnMessageListener {
 		btn.setOnAction(
 				event ->{
 						btn.setDisable(true);
-						Gson gson = new Gson();
-						String json = gson.toJson(new Message("Attack_"+row+","+col));
-						TCPConnection.getInstance().getEmisor().sendMessage(json);
 						
+						sendMessage("Attack_"+row+","+col);
 					
 				});
 		
@@ -165,6 +169,8 @@ public class GameController implements OnMessageListener {
 			}
 		}
 	}
+	
+
 	
 	
 	private void surrender() {

@@ -6,8 +6,6 @@ import java.util.Calendar;
 import java.util.UUID;
 
 import com.google.gson.Gson;
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
-
 import comm.TCPConnection;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
@@ -114,7 +112,7 @@ public class GameController implements OnMessageListener {
 	}
 	
 	private void receiveAttack(String coord) {
-		
+		disableAttacks(false);
 		
 		String[] realCoord = coord.split(",");
 		
@@ -134,6 +132,8 @@ public class GameController implements OnMessageListener {
 		} else {
 			view.drawAttackInRadar(row, col);
 		}
+		
+		
 				
 		
 		
@@ -142,9 +142,11 @@ public class GameController implements OnMessageListener {
 	private void attackButtonAction(Button btn, int row, int col) {
 		btn.setOnAction(
 				event ->{
-						btn.setDisable(true);
+						btn.setVisible(false);
 						
 						sendMessage("Attack_"+row+","+col);
+						
+						disableAttacks(true);
 					
 				});
 		
@@ -157,15 +159,15 @@ public class GameController implements OnMessageListener {
 		view.getStatusLabel().setText("Perdiste");
 		view.getSendNameBtn().setDisable(true);
 		view.getSurrenderBtn().setDisable(true);
-		disableAttacks();
+		disableAttacks(true);
 	}
 	
-	private void disableAttacks() {
+	private void disableAttacks(boolean able) {
 		Button[][] layout = view.getAtaque();
 		
 		for (int i = 0; i < layout.length; i++) {
 			for (int j = 0; j < layout[0].length; j++) {
-				layout[i][j].setDisable(true);
+				layout[i][j].setDisable(able);
 			}
 		}
 	}
@@ -177,7 +179,7 @@ public class GameController implements OnMessageListener {
 		view.getStatusLabel().setText("Ganador, el enemigo se rindio");
 		view.getSendNameBtn().setDisable(true);
 		view.getSurrenderBtn().setDisable(true);
-		disableAttacks();
+		disableAttacks(true);
 	}
 
 }
